@@ -1,6 +1,6 @@
-fastapi
-uvicorn
-openai
-python-dotenv
-slowapi
-limits
+fastapi==0.109.2
+uvicorn==0.27.1
+openai==1.12.0
+python-dotenv==1.0.1
+slowapi==0.1.9
+limits==3.8.0
