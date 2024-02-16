@@ -7,13 +7,21 @@ from openai import OpenAI
 from random import choice
 import os
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 from models import IdeaInput
 
 app = FastAPI()
 load_dotenv()
 
-# Read the OpenAI API key from environment.api_key = os.getenv("OPENAI_API_KEY")
+# set up CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Set up the limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -22,7 +30,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.post("/generate-business-idea/")
-@limiter.limit("5/minute")
 async def generate_business_idea(request: Request, idea_input: IdeaInput):
     try:
         # Split the input strings into lists
@@ -39,29 +46,36 @@ async def generate_business_idea(request: Request, idea_input: IdeaInput):
         Limit the name to 100 characters and the description to 300
         """
 
+        print(prompt)
+
         # Make the API call to OpenAI's GPT-3.5
         openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        response = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",  # Update this if you're using a different version/model
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                }
-            ]
-        )
+        debug = os.getenv("ENV", "test") == "test"
+        if not debug:
+            response = openai_client.chat.completions.create(
+                model="gpt-3.5-turbo",  # Update this if you're using a different version/model
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt
+                    }
+                ]
+            )
 
-        # Extracting the text from the response
-        gpt_response = response.choices[0].message.content
+            # Extracting the text from the response
+            gpt_response = response.choices[0].message.content
 
-        # Constructing the response
-        # try to parse as JSON
-        try:
-            gpt_response = json.loads(gpt_response)
-            business_idea_name = gpt_response["business_idea_name"]
-            business_idea_description = gpt_response["business_idea_description"]
-        except:
-            raise HTTPException(status_code=500, detail="Failed to parse the response from GPT-3.5")
+            # Constructing the response
+            # try to parse as JSON
+            try:
+                gpt_response = json.loads(gpt_response)
+                business_idea_name = gpt_response["business_idea_name"]
+                business_idea_description = gpt_response["business_idea_description"]
+            except:
+                raise HTTPException(status_code=500, detail="Failed to parse the response from GPT-3.5")
+        else:
+            business_idea_name = "Test Business Idea Name"
+            business_idea_description = "Test Business Idea Description"
 
 
         return {
