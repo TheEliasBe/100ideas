@@ -9,9 +9,11 @@ import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 
+
+from mangum import Mangum
+
 from api.config.base import ALLOW_ORIGINS, LIMIT
 from models import IdeaInput
-from mangum import Mangum
 
 app = FastAPI()
 handler = Mangum(app)
