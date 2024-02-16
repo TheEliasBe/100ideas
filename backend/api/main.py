@@ -9,7 +9,7 @@ import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 
-from config.base import ALLOW_ORIGINS, LIMIT
+from api.config.base import ALLOW_ORIGINS, LIMIT
 from models import IdeaInput
 from mangum import Mangum
 
