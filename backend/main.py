@@ -9,6 +9,7 @@ import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 
+from config.base import ALLOW_ORIGINS, LIMIT
 from models import IdeaInput
 
 app = FastAPI()
@@ -17,7 +18,7 @@ load_dotenv()
 # set up CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=ALLOW_ORIGINS,  # Allows all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
@@ -30,6 +31,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.post("/generate-business-idea/")
+@limiter.limit(LIMIT)
 async def generate_business_idea(request: Request, idea_input: IdeaInput):
     try:
         # Split the input strings into lists
@@ -50,7 +52,7 @@ async def generate_business_idea(request: Request, idea_input: IdeaInput):
 
         # Make the API call to OpenAI's GPT-3.5
         openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        debug = os.getenv("ENV", "test") == "test"
+        debug = os.getenv("ENV") == "test"
         if not debug:
             response = openai_client.chat.completions.create(
                 model="gpt-3.5-turbo",  # Update this if you're using a different version/model
