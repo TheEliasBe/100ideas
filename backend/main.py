@@ -11,8 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config.base import ALLOW_ORIGINS, LIMIT
 from models import IdeaInput
+from mangum import Mangum
 
 app = FastAPI()
+handler = Mangum(app)
 load_dotenv()
 
 # set up CORS

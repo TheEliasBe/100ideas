@@ -4,3 +4,4 @@ openai==1.12.0
 python-dotenv==1.0.1
 slowapi==0.1.9
 limits==3.8.0
+mangum==0.17.0
