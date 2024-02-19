@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from mangum import Mangum
 
-from api.config.base import ALLOW_ORIGINS, LIMIT
+from config.base import ALLOW_ORIGINS, LIMIT
 from models import IdeaInput
 
 app = FastAPI()
