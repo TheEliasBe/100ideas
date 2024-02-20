@@ -22,7 +22,7 @@ const InputForm = () => {
         console.log(expertise);
 
         // Here, replace 'YOUR_API_ENDPOINT' with your actual FastAPI endpoint URL
-        const response = await fetch('http://127.0.0.1:8000/generate-business-idea/', {
+        const response = await fetch(' https://yc27rm0tia.execute-api.eu-west-1.amazonaws.com/dev/generate-business-idea/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
